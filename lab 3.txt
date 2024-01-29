@@ -1,0 +1,69 @@
+.MODEL SMALL
+
+.DATA
+
+    COD DB 2 DUP (?)
+
+.CODE
+  MOV AH, 01H
+  INT 21H
+  
+  MOV BL, AL
+  
+  MOV DL, 0Ah      
+  MOV AH, 02h      
+  INT 21h          
+          
+  MOV DL, 08h      
+  MOV AH, 02h      
+  INT 21h
+  
+  MOV SI, OFFSET COD
+  
+  XOR DL, DL
+  XOR AX, AX
+  MOV AL, BL
+  MOV CX, 10h
+  DIV CX
+  
+  MOV [SI], AL
+  MOV [SI+1], DL
+  
+  MOV SI, OFFSET COD
+  
+  
+  CONVERTIR:
+    CMP BYTE PTR [SI], 0
+    JE IMPRIMIR
+  
+    CMP BYTE PTR [SI], 09H
+    JA LETRA
+    
+    JMP NUMERO
+  
+  NUMERO:
+    ADD BYTE PTR [SI], '0'
+    INC SI
+    JMP CONVERTIR
+  
+  LETRA:
+    ADD BYTE PTR [SI], 37H
+    INC SI
+    JMP CONVERTIR
+  
+  IMPRIMIR:
+    MOV SI, OFFSET COD
+    IMP:
+      MOV DX, [SI]
+  
+      MOV AH,02h       
+      INT 21h                 
+            
+      CMP BYTE PTR [SI], 0      
+      JE FIN                  
+                               
+      INC SI                  
+      JMP IMP
+  
+FIN: INT 20H
+END
